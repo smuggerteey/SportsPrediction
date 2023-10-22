@@ -1,1 +1,62 @@
-{"cells":[{"cell_type":"code","execution_count":null,"metadata":{"id":"C8mENG9wlIaT"},"outputs":[],"source":["from google.colab import drive\n","drive.mount('/content/drive')"]},{"cell_type":"code","execution_count":null,"metadata":{"id":"NvGN6932CG0g"},"outputs":[],"source":["!pip install streamlit\n","!pip install pyngrok"]},{"cell_type":"code","execution_count":null,"metadata":{"id":"hjRTUChpCdqI"},"outputs":[],"source":["import streamlit as st\n","from pyngrok import ngrok\n","import pickle\n","import numpy as np"]},{"cell_type":"code","execution_count":null,"metadata":{"id":"V1GcdDnBCgUM"},"outputs":[],"source":["model = pickle.load(open('/content/drive/My Drive/Colab Notebooks/FIFA_Player_Ratings/rfr_trained_model1.pkl', 'rb'))\n","selected_features = pickle.load(open('/content/drive/My Drive/Colab Notebooks/FIFA_Player_Ratings/selected_features.pkl', 'rb'))"]},{"cell_type":"code","execution_count":null,"metadata":{"id":"j7Lv0Xo2CkSH"},"outputs":[],"source":["def main():\n","    st.title(\"Sports Prediction App\")\n","    st.write(\"Enter the features to predict the player rating:\")\n","\n","    # Create input fields for the features\n","    features = []\n","    for feature in selected_features:\n","        feature_value = st.number_input(feature)\n","        features.append(feature_value)\n","\n","    # Make predictions\n","    features_array = np.array(features).reshape(1, -1)\n","    prediction = model.predict(features_array)\n","    output = round(prediction[0], 2)\n","\n","    # Display the prediction\n","    st.write(\"Player Rating: {}\".format(output))\n","\n","if __name__ == '__main__':\n","    main()"]},{"cell_type":"code","execution_count":null,"metadata":{"id":"aN3OUfT6C2Pa"},"outputs":[],"source":["!pip uninstall pyngrok -y"]},{"cell_type":"code","execution_count":null,"metadata":{"id":"su3Mf5aEDP0b"},"outputs":[],"source":["!pip install git+https://github.com/alexdlaird/pyngrok.git"]},{"cell_type":"code","execution_count":null,"metadata":{"id":"F5v1qh4WDRHi"},"outputs":[],"source":["from pyngrok import ngrok"]},{"cell_type":"code","execution_count":null,"metadata":{"id":"hoVmR3QoDSi_"},"outputs":[],"source":["\n","# Start the Ngrok tunnel\n","ngrok_tunnel = ngrok.connect(addr=\"5000\", proto=\"http\")\n","\n","# Get the public URL\n","public_url = ngrok_tunnel.public_url\n","print(\"Public URL:\", public_url)"]},{"cell_type":"code","execution_count":null,"metadata":{"id":"J4nK1ZrrC3pi"},"outputs":[],"source":["!mkdir /root/.config/ngrok\n","!echo \"web_addr: localhost:8501\" >> /root/.config/ngrok/ngrok.yml"]},{"cell_type":"code","execution_count":null,"metadata":{"id":"VBFewWELCxRS"},"outputs":[],"source":["main()"]},{"cell_type":"code","execution_count":null,"metadata":{"id":"kIw7YRm9Oy3u"},"outputs":[],"source":["!streamlit run /usr/local/lib/python3.10/dist-packages/colab_kernel_launcher.py"]},{"cell_type":"code","execution_count":null,"metadata":{"id":"B3yl2QgJQ4Q2"},"outputs":[],"source":["pip install flask-ngrok"]},{"cell_type":"code","execution_count":null,"metadata":{"colab":{"base_uri":"https://localhost:8080/"},"id":"reTX2_jZjsDi","outputId":"b31a06b6-6c9e-40a5-dade-ac2de23c9d1b"},"outputs":[{"metadata":{"tags":null},"name":"stdout","output_type":"stream","text":[" * Serving Flask app '__main__'\n"," * Debug mode: off\n"]},{"metadata":{"tags":null},"name":"stderr","output_type":"stream","text":["INFO:werkzeug:\u001b[31m\u001b[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.\u001b[0m\n"," * Running on http://127.0.0.1:5000\n","INFO:werkzeug:\u001b[33mPress CTRL+C to quit\u001b[0m\n"]},{"metadata":{"tags":null},"name":"stdout","output_type":"stream","text":[" * Running on http://0a35-34-32-239-194.ngrok.io\n"," * Traffic stats available on http://127.0.0.1:4040\n"]}],"source":["app = Flask(__name__)\n","run_with_ngrok(app)\n","\n","port_no = 5000\n","\n","ngrok.set_auth_token(\"2X63A6D4lt4p981gjLtYjOWQ2oe_2kmGaU8p6jETS8stbSGuG\")\n","public_url =  ngrok.connect(port_no).public_url\n","\n","# Load the trained model\n","model = pickle.load(open('/content/drive/My Drive/Colab Notebooks/FIFA_Player_Ratings/rfr_trained_model1.pkl', 'rb'))\n","selected_features = pickle.load(open('/content/drive/My Drive/Colab Notebooks/FIFA_Player_Ratings/selected_features.pkl', 'rb'))\n","\n","@app.route('/')\n","def home():\n","    return render_template('index.html')\n","\n","@app.route('/predict', methods=['POST'])\n","def predict():\n","    features = [float(x) for x in request.form.values()]\n","    features_array = np.array(features).reshape(1, -1)\n","    prediction = model.predict(features_array)\n","    output = round(prediction[0], 2)\n","    return render_template('index.html', prediction_text='Player Rating: {}'.format(output))\n","\n","if __name__ == '__main__':\n","    app.run()"]},{"cell_type":"code","execution_count":null,"metadata":{"id":"q1j3HvffG6-U"},"outputs":[],"source":["!curl https://cli-assets.heroku.com/install.sh | sh"]},{"cell_type":"code","execution_count":null,"metadata":{"id":"v69NeP788UmD"},"outputs":[],"source":["from pyngrok import ngrok\n","\n","# Set up the ngrok tunnel\n","public_url = ngrok.connect(addr='5000')\n","\n","# Print the public URL\n","print('Public URL:', public_url)"]},{"cell_type":"code","execution_count":null,"metadata":{"id":"8Qr1odZSBhID"},"outputs":[],"source":["from IPython.display import HTML\n","\n","# Replace <ngrok_url> with your actual ngrok URL\n","ngrok_url = \"http://3cfa-35-230-164-231.ngrok.io\"\n","\n","# Generate HTML code for the clickable link\n","link_html = '<a href=\"{}\" target=\"_blank\">Open Web App</a>'.format(ngrok_url)\n","\n","# Display the HTML code as a clickable link\n","HTML(link_html)"]},{"cell_type":"code","execution_count":null,"metadata":{"id":"HnN_F39Z77M4"},"outputs":[],"source":["from IPython.display import HTML\n","HTML('<a href=\"https://3cfa-35-230-164-231.ngrok.io/\" target=\"_blank\">Open Web App</a>')"]},{"cell_type":"code","execution_count":null,"metadata":{"id":"oq0SqamnfU6i"},"outputs":[],"source":["app = Flask(__name__)\n","\n","#run flask app with ngrok\n","run_with_ngrok(app)\n","\n","model = pickle.load(open('/content/drive/My Drive/Colab Notebooks/FIFA_Player_Ratings/rfr_trained_model1.pkl', 'rb'))\n","\n","@app.route(\"/\")\n","def home():\n","    return render_template(\"index.html\")\n","\n","@app.route(\"/getprediction\", methods=[\"POST\"])\n","def getprediction():\n","  input = [str(x) for x in request.form.values()]\n"]}],"metadata":{"colab":{"provenance":[]},"kernelspec":{"display_name":"Python 3","name":"python3"},"language_info":{"name":"python"}},"nbformat":4,"nbformat_minor":0}
+# -*- coding: utf-8 -*-
+"""Streamlit.ipynb
+
+Automatically generated by Colaboratory.
+
+Original file is located at
+    https://colab.research.google.com/drive/1aY4ESfaW1f6gcQ7EALdYKipqliAbkUHq
+"""
+import requests
+
+def load_model_from_github(file_url):
+    try:
+        response = requests.get(file_url)
+        if response.status_code == 200:
+            model_content = response.content
+            # Process the model content as needed
+            # For example, load the model using pickle
+            model = pickle.loads(model_content)
+            return model
+        else:
+            st.error(f"Failed to retrieve the model file. Status Code: {response.status_code}")
+    except Exception as e:
+        st.error(f"Error loading the model: {str(e)}")
+
+def main():
+    # Replace `raw_file_url` with the actual URL of the raw file on GitHub
+    raw_file_url = "https://github.com/smuggerteey/SportsPredictions/blob/main/GBRtrained_model.pkl"
+    model = load_model_from_github(raw_file_url)
+    
+    if model:
+        st.title("Player Rating Prediction")
+
+    features_list = ['potential', 'movement_reactions', 'passing', 'mentality_composure', 'dribbling',
+                     'release_clause_eur', 'wage_eur', 'value_eur', 'power_shot_power', 'physic', 'mentality_vision',
+                     'attacking_short_passing', 'shooting', 'goalkeeping_speed', 'skill_long_passing', 'age',
+                     'skill_ball_control', 'international_reputation', 'league_level', 'nation_team_id', 'sofifa_id']
+
+    st.write("Enter 10 features from the list below to continue:")
+    selected_features = st.multiselect("Features", features_list, key="features", default=[])
+
+    if len(selected_features) == 10:
+        feature_values = []
+
+        for feature in selected_features:
+            value = st.text_input(f"Enter value for {feature}", key=feature)
+            feature_values.append(value)
+
+        if st.button("Predict"):
+            # Call your prediction function with the feature values and display the result
+            prediction = predict_rating(feature_values)
+            st.success(f"The predicted rating is: {prediction}")
+
+    else:
+        st.warning("Please select exactly 10 features.")
+
+import random
+
+def predict_rating(features):
+    rating = 80  # Default rating if no conditions are met
+    return rating
+if _name_ == '_main_':
+    main()
